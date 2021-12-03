@@ -43,9 +43,9 @@ async function verifyUser(req,res,next){
 
 })
 .post('/new',async (req,res)=>{
-    console.log(req.body);
+    
     const {email,name,googleId,imageUrl} = req.body;
-    const user = await User.findOne({email});
+    const user = await User.findOne({googleId:googleId});
     if(user){
         const token = jwt.sign({_id:user._id},process.env.SECRET);
         return res.status(200).json({
@@ -60,6 +60,35 @@ async function verifyUser(req,res,next){
             message: 'User created',
             token:token
         });
+    });
+})
+.post('/address/add',verifyUser,async (req,res)=>{
+    const {address} = req.body;
+    const user = req.user;
+    const userData = await User.findOne({_id:user._id});
+    const newAddress = [...userData.addresses,address];
+    User.findOneAndUpdate({_id:user._id},{addresses:newAddress}).then((user)=>{
+        res.status(200).json({
+            message:'address added'
+        });
+    });
+}).put('/user/update',verifyUser,async (req,res)=>{
+    
+    const {name,email,avatar} = req.body;
+    const user = await User.findOne({_id:req.user._id});
+    if(!user){
+        return res.status(404).json({
+            message:"Wrong user id"
+        });
+    }
+
+    User.updateOne({googleId:user.googleId},{name,email,avatar}).then(()=>{
+        User.findOne({googleId:user.googleId}).then((user)=>{
+            res.status(200).json({
+                message:'User updated',
+                user:user
+            });
+        })
     });
 })
 

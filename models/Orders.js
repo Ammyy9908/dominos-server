@@ -15,9 +15,11 @@ const order_schema = new Schema({
     },
     status:{
         type:String,
-        required:true
+        default:'processing'
         // is Out for delivery, Delivered, Cancelled
     }
+},{
+    timestamps:true
 });
 
 const Order = model('Order',order_schema);
