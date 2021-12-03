@@ -91,5 +91,20 @@ async function verifyUser(req,res,next){
         })
     });
 })
+.put('/user/cart/add',verifyUser,async (req,res)=>{
+    const {item,qty} = req.body;
+    const user = await User.findOne({_id:req.user._id});
+
+    const old_cart = user.cart;
+    const new_cart = [...old_cart,{item,qty}];
+
+    User.findOne({_id:req.user.id},{
+        cart:new_cart
+    }).then(()=>{
+        res.status(200).send({message:"Item Added to cart!"});
+    }).catch((err)=>{
+        console.log(err);
+    });
+})
 
 module.exports = router;
