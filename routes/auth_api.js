@@ -105,6 +105,31 @@ async function verifyUser(req,res,next){
     }).catch((err)=>{
         console.log(err);
     });
+}).put('/user/favourites/add',verifyUser,async (req,res)=>{
+    const user = req.user;
+
+    const {item} = req.body;
+
+    const userData = await User.findOne({_id:user._id});
+
+    const oldFavourites = userData.favourites;
+
+    const newFavourites = [...oldFavourites,item];
+
+    User.updateOne({_id:user._id},{favourites:newFavourites})
+    .then(()=>{
+        res.status(200).send({message:"Item Added to Favourites!"});
+    }).catch((e)=>{
+        res.status(500).send({error:"Problem while adding to favourites!"});
+    })
+})
+.get('/user/favourite/fetch',verifyUser,async (req,res)=>{
+
+    const user = req.user;
+
+    const userData = await User.findOne({_id:user._id});
+
+    res.status(200).send({favourites:userData.favourites});
 })
 
 module.exports = router;

@@ -28,6 +28,10 @@ const user_schema = new Schema({
     addresses:{
         type:Array,
         default:[]
+    },
+    favourites:{
+        type:Array,
+        default:[]
     }
 
 })
