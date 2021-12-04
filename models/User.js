@@ -25,9 +25,9 @@ const user_schema = new Schema({
         type:Array,
         default:[]
     },
-    addresses:{
-        type:Array,
-        default:[]
+    address:{
+        type:String,
+        default:null
     },
     favourites:{
         type:Array,

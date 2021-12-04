@@ -71,7 +71,7 @@ async function verifyUser(req,res,next){
         res.status(200).json({
             message:'address added'
         });
-    });
+    }).catch((err)=>res.send({error:err}));
 }).put('/user/update',verifyUser,async (req,res)=>{
     
     const {name,email,avatar} = req.body;
@@ -91,21 +91,7 @@ async function verifyUser(req,res,next){
         })
     });
 })
-.put('/user/cart/add',verifyUser,async (req,res)=>{
-    const {item,qty} = req.body;
-    const user = await User.findOne({_id:req.user._id});
-
-    const old_cart = user.cart;
-    const new_cart = [...old_cart,{item,qty}];
-
-    User.findOne({_id:req.user.id},{
-        cart:new_cart
-    }).then(()=>{
-        res.status(200).send({message:"Item Added to cart!"});
-    }).catch((err)=>{
-        console.log(err);
-    });
-}).put('/user/favourites/add',verifyUser,async (req,res)=>{
+.put('/user/favourites/add',verifyUser,async (req,res)=>{
     const user = req.user;
 
     const {item} = req.body;
@@ -123,6 +109,34 @@ async function verifyUser(req,res,next){
         res.status(500).send({error:"Problem while adding to favourites!"});
     })
 })
+.delete('/user/favourite/delete/:id',verifyUser,async (req,res)=>{
+    const user = req.user;
+    const {id} = req.params;
+    console.log(id);
+    const userData = await User.findOne({_id:user._id});
+    const oldFavourites = userData.favourites;
+    const index = oldFavourites.findIndex(
+        (favouriteItem) => favouriteItem.id === +id
+      );
+      
+
+      let newFavourite = [...oldFavourites];
+      if(index>=0){
+          
+        newFavourite.splice(index, 1);
+      }
+
+
+      User.updateOne({_id:user._id},{favourites:newFavourite})
+      .then(()=>{
+          res.status(200).send({message:"Item Deleted from Favourites!"});
+      }).catch((e)=>{
+            res.status(500).send({error:"Problem while deleting from favourites!"});
+      })
+
+    
+}
+)
 .get('/user/favourite/fetch',verifyUser,async (req,res)=>{
 
     const user = req.user;
