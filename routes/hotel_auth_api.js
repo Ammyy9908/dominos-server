@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const ResturantUser = require('../models/Dominosuser');
+const ResturantUser = require('../models/DominosUser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -13,7 +13,7 @@ async function verifyUser(req,res,next){
 
     try{
         const user = await jwt.verify(token,'myappsecret');
-        console.log(user);
+       
         if(!user){
             return res.status(401).json({
                 message: 'Invalid token'
